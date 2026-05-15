@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import { marked } from 'marked';
+import dompurify from 'dompurify';
 import { autoResizeTextarea, checkEnvironment, setLoading } from './utils.js';
 checkEnvironment();
 
@@ -48,7 +50,7 @@ async function handleGiftRequest(e) {
     });
     console.log(response);
     const responseSuggestions = response.choices[0].message.content;
-    outputContent.textContent = responseSuggestions;
+    outputContent.innerHTML = dompurify.sanitize(marked.parse(responseSuggestions));
   } catch (error) {
     console.error(error);
     outputContent.textContent = "Sorry, I can't access what I need right now. Please try again.";
