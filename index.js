@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { marked } from 'marked';
 import dompurify from 'dompurify';
-import { autoResizeTextarea, checkEnvironment, setLoading } from './utils.js';
+import { autoResizeTextarea, checkEnvironment, setLoading, showStream } from './utils.js';
 checkEnvironment();
 
 const openai = new OpenAI({
@@ -44,13 +44,20 @@ async function handleGiftRequest(e) {
   });
 
   try {
-    const response = await openai.chat.completions.create({
+    const stream = await openai.chat.completions.create({
       model: process.env.AI_MODEL,
       messages,
+      stream: true,
     });
-    console.log(response);
-    const responseSuggestions = response.choices[0].message.content;
-    outputContent.innerHTML = dompurify.sanitize(marked.parse(responseSuggestions));
+    let suggestions = '';
+    showStream();
+    for await (const chunk of stream) {
+      if (chunk.choices[0].delta.content) {
+        const chunkContent = chunk.choices[0].delta.content;
+        suggestions += chunkContent;
+        outputContent.innerHTML = dompurify.sanitize(marked.parse(suggestions));
+      }
+    }
   } catch (error) {
     console.error(error);
     outputContent.textContent = "Sorry, I can't access what I need right now. Please try again.";

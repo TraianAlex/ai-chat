@@ -39,6 +39,15 @@ export function setLoading(isLoading) {
   }
 }
 
+/**
+ * Show the output container immediately (for streaming feedback)
+ */
+export function showStream() {
+  const outputContainer = document.getElementById('output-container');
+  outputContainer.classList.remove('hidden');
+  outputContainer.classList.add('visible');
+}
+
 export function checkEnvironment() {
   if (!process.env.AI_URL) {
     throw new Error("Missing AI_URL. This tells us which AI provider you're using.");
