@@ -187,7 +187,8 @@ async function handleGiftRequest(e) {
       model: process.env.AI_MODEL,
       messages,
       stream: true,
-      temperature: 0.7,
+      // temperature: 0,
+      // top_p: 0.1,
     });
     let suggestions = '';
     showStream();
