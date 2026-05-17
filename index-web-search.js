@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { checkEnvironment } from './utils.js';
 
-// Initialize OpenAI client with environment variables
 const openai = new OpenAI({
   apiKey: process.env.AI_KEY,
   baseURL: process.env.AI_URL,

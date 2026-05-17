@@ -5,25 +5,21 @@ import { checkEnvironment, autoResizeTextarea, setLoading, showStream } from './
 
 checkEnvironment();
 
-// Initialize an OpenAI client for your provider using env vars
 const openai = new OpenAI({
   apiKey: process.env.AI_KEY,
   baseURL: process.env.AI_URL,
   dangerouslyAllowBrowser: true,
 });
 
-// Get UI elements
 const giftForm = document.getElementById('gift-form');
 const userInput = document.getElementById('user-input');
 const outputContent = document.getElementById('output-content');
 
 function start() {
-  // Setup UI event listeners
   userInput.addEventListener('input', () => autoResizeTextarea(userInput));
   giftForm.addEventListener('submit', handleGiftRequest);
 }
 
-// System prompt for the Gift Genie with web search capability
 const systemPrompt = `You are the Gift Genie that can search the web! 
 
 You generate gift ideas that feel thoughtful, specific, and genuinely useful.
@@ -54,18 +50,14 @@ with links to various ecommerce sites with relevant search queries and filters
 already applied.`;
 
 async function handleGiftRequest(e) {
-  // Prevent default form submission
   e.preventDefault();
 
-  // Get user input, trim whitespace, exit if empty
   const userPrompt = userInput.value.trim();
   if (!userPrompt) return;
 
-  // Set loading state (hides output, animates lamp)
   setLoading(true);
 
   try {
-    // Use Responses API with web_search_preview tool
     const response = await openai.responses.create({
       model: process.env.AI_MODEL,
       input: [
@@ -75,31 +67,23 @@ async function handleGiftRequest(e) {
       tools: [{ type: 'web_search_preview' }],
     });
 
-    // Show output container
     showStream();
 
-    // Get the response text
     const giftSuggestions = response.output_text;
 
-    // Convert Markdown to HTML
     const html = marked.parse(giftSuggestions);
 
-    // Sanitize the HTML to prevent XSS attacks
     const safeHTML = DOMPurify.sanitize(html);
 
-    // Render the output
     outputContent.innerHTML = safeHTML;
 
     console.log(giftSuggestions);
   } catch (error) {
-    // Log the error for debugging
     console.error(error);
 
-    // Display friendly error message
     outputContent.textContent =
       "Sorry, I can't access what I need right now. Please try again in a bit.";
   } finally {
-    // Always clear loading state (shows output, resets lamp)
     setLoading(false);
   }
 }

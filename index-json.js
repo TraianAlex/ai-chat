@@ -3,7 +3,6 @@ import { checkEnvironment, sleep } from './utils.js';
 import { giftSchema } from './schema.js';
 import { giftSchemaResponses } from './schema-reponses.js';
 
-// Initialize OpenAI client with environment variables
 const openai = new OpenAI({
   apiKey: process.env.AI_KEY,
   baseURL: process.env.AI_URL,
@@ -50,7 +49,6 @@ async function runDemo() {
     console.log(`Call ${i}:`);
     console.log(result);
 
-    // Try to parse as JSON to see if it works
     try {
       JSON.parse(result);
       console.log('✓ Parsed as JSON');
